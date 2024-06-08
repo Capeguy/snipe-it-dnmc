@@ -18,7 +18,7 @@
 
 <div class="row">
   <!-- left column -->
-  <div class="col-md-7">
+  <div class="col-md-6">
     <div class="box box-default">
       <div class="box-header with-border">
         <h2 class="box-title"> {{ trans('admin/hardware/form.tag') }} </h2>
@@ -87,8 +87,17 @@
   </div> <!--/.col-md-7-->
 
   <!-- right column -->
-  <div class="col-md-5" id="current_assets_box" style="display:none;">
-    <div class="box box-primary">
+  <div class="col-md-6">
+    <div class="box box-success" id="related_assets_box" style="display:none;">
+      <div class="box-header with-border">
+        <h2 class="box-title">Related Assets</h2>
+      </div>
+      <div class="box-body">
+        <div id="related_assets_content">
+        </div>
+      </div>
+    </div>
+    <div class="box box-primary" id="current_assets_box" style="display:none;">
       <div class="box-header with-border">
         <h2 class="box-title">{{ trans('admin/users/general.current_assets') }}</h2>
       </div>
@@ -99,9 +108,31 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      $.ajax({
+        url: '/api/v1/users/me',
+        type: 'GET',
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+          console.log(data.id);
+          $("#assigned_user_select").select2("trigger", "select", {data: { id: data.id, text: data.name }});
+        }
+      });
+      var selectedAssets = JSON.parse(localStorage.getItem('selectedAssets')) || [];
+      selectedAssets.forEach(option => {
+        $("#assigned_assets_select").select2("trigger", "select", {data: { id: option.id, text: option.asset_tag }});
+      });
+    }, 250);
+  });
+</script>
 @stop
 
 @section('moar_scripts')
 @include('partials/assets-assigned')
+@include('partials/assets-related')
 
 @stop

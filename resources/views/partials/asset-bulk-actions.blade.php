@@ -31,5 +31,27 @@
     </select>
 
     <button class="btn btn-primary" id="{{ (isset($id_button)) ? $id_button : 'bulkAssetEditButton' }}" disabled>{{ trans('button.go') }}</button>
+    <button class="btn btn-primary" id="bulkAssetCheckInButton">Quick Check-In</button>
+    <button class="btn btn-primary" id="bulkAssetCheckOutButton">Quick Check-Out</button>
+
     {{ Form::close() }}
 </div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#bulkAssetCheckInButton').on('click', function() {
+            var selectedAssets = $('#assetsListingTable').bootstrapTable('getSelections');
+            console.log(selectedAssets);
+            localStorage.setItem('selectedAssets', JSON.stringify(selectedAssets));
+            window.location.href = 'hardware/bulkcheckin';
+            return false;
+        });
+        $('#bulkAssetCheckOutButton').on('click', function() {
+            // Store selected assets in local storage
+            var selectedAssets = $('#assetsListingTable').bootstrapTable('getSelections');
+            console.log(selectedAssets);
+            localStorage.setItem('selectedAssets', JSON.stringify(selectedAssets));
+            window.location.href = 'hardware/bulkcheckout';
+            return false;
+        });
+    });
+</script>

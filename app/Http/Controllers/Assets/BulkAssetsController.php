@@ -111,6 +111,10 @@ class BulkAssetsController extends Controller
 
 
             switch ($request->input('bulk_actions')) {
+                case 'quick_checkin':
+                    $this->authorize('checkout', Asset::class);
+                    return view('hardware/bulk-checkin')->with('assets', $assets);
+                    
                 case 'labels':
                     $this->authorize('view', Asset::class);
 

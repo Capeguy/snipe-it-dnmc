@@ -437,6 +437,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
       * Assets API routes
       */
       Route::group(['prefix' => 'hardware'], function () {
+
+        Route::get('related/{asset_ids}',
+            [
+                Api\AssetsController::class, 
+                'showRelated'
+            ]
+        )->name('api.assets.related');
         
         Route::get('selectlist',
             [

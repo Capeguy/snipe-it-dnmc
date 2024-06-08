@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\CheckoutableCheckedIn;
 use App\Http\Requests\StoreAssetRequest;
 use App\Http\Traits\MigratesLegacyAssetLocations;
+use App\Models\AssetLink;
 use App\Models\CheckoutAcceptance;
 use App\Models\LicenseSeat;
 use Illuminate\Database\Eloquent\Builder;
@@ -491,6 +492,59 @@ class AssetsController extends Controller
 
             return (new AssetsTransformer)->transformAsset($asset, $request->input('components') );
         }
+
+
+    }
+
+    /**
+     * Returns JSON with information about an asset for detail view.
+     *
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @param int $assetId
+     * @since [v4.0]
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showRelated(Request $request, $ids)
+    {
+        $this->authorize('view', Asset::class);
+        $transformer = 'App\Http\Transformers\AssetsTransformer';
+        $this->authorize('index', Asset::class);   
+        /* 
+         * Tokenize the string of IDs
+         * For each ID, 
+         * - Get the list of related_asset_id based on model_id column in the AssetLinks table
+         * - Add the list of related_asset_ids to a list of IDs
+         * Get the list of assets based on the list of IDs
+         * Return the list of assets
+         */ 
+        $ids = explode(',', $ids);
+        $assets = Asset::whereIn('id', $ids)->get();
+        $model_ids = [];
+        foreach ($assets as $asset) {
+            $model_ids[] = $asset->model_id;
+        }
+        $model_ids = array_unique($model_ids);
+        
+        $assetLinks = AssetLink::whereIn('model_id', $model_ids)->get();
+        $relatedModelIds = [];
+        foreach ($assetLinks as $assetLink) {
+            $relatedModelIds[] = $assetLink->related_model_id;
+        }
+        $relatedModelIds = array_unique($relatedModelIds);
+        $assets = Asset::whereIn('model_id', $relatedModelIds)->whereNotIn('id', $ids);
+
+        // Make sure the offset and limit are actually integers and do not exceed system limits
+        $offset = ($request->input('offset') > $assets->count()) ? $assets->count() : app('api_offset_value');
+        $limit = app('api_limit_value');
+
+        $total = $assets->count();
+        $assets = $assets->skip($offset)->take($limit)->get();
+        
+        /**
+         * Here we're just determining which Transformer (via $transformer) to use based on the 
+         * variables we set earlier on in this method - we default to AssetsTransformer.
+         */
+        return (new $transformer)->transformAssets($assets, $total, $request);
 
 
     }
