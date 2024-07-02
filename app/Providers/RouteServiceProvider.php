@@ -43,6 +43,7 @@ class RouteServiceProvider extends ServiceProvider
         ], function ($router) {
             require base_path('routes/web/hardware.php');
             require base_path('routes/web/models.php');
+            require base_path('routes/web/model_links.php');
             require base_path('routes/web/accessories.php');
             require base_path('routes/web/licenses.php');
             require base_path('routes/web/consumables.php');

@@ -665,6 +665,14 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                                         </li>
                                     @endcan
 
+                                    @can('view', \App\Models\AssetModel::class)
+                                        <li>
+                                            <a href="{{ route('model_links.index') }}" {{ (Request::is('/assetmodels') ? ' class="active"' : '') }}>
+                                                Asset Model Links
+                                            </a>
+                                        </li>
+                                    @endcan
+                                    
                                     @can('view', \App\Models\Category::class)
                                         <li>
                                             <a href="{{ route('categories.index') }}" {{ (Request::is('/categories') ? ' class="active"' : '') }}>

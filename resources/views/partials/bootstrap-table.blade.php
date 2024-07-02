@@ -494,6 +494,7 @@
         'maintenances',
         'statuslabels',
         'models',
+        'model_links',
         'licenses',
         'categories',
         'suppliers',

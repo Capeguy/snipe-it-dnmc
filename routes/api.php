@@ -793,6 +793,20 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
         ]
         ); // end asset models API routes
 
+        Route::resource('model_links', 
+        Api\AssetModelLinksController::class,
+        ['names' => [
+                'index' => 'api.model_links.index',
+                'show' => 'api.model_links.show',
+                'update' => 'api.model_links.update',
+                'store' => 'api.model_links.store',
+                'destroy' => 'api.model_links.destroy',
+            ],
+        'except' => ['create', 'edit'],
+        'parameters' => ['model' => 'model_id'],
+        ]
+        ); // end asset model_links API routes
+
 
 
         /**

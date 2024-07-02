@@ -19,7 +19,7 @@ use Watson\Validating\ValidatingTrait;
 class AssetLink extends SnipeModel
 {
     use HasFactory;
-    protected $presenter = \App\Presenters\AssetModelPresenter::class;
+    protected $presenter = \App\Presenters\AssetModelLinkPresenter::class;
     use Loggable, Requestable, Presentable;
 
     protected $table = 'model_links';
@@ -69,6 +69,7 @@ class AssetLink extends SnipeModel
      * @var array
      */
     protected $searchableRelations = [
+        'model' => ['name'],
         // 'depreciation' => ['name'],
         // 'category'     => ['name'],
         // 'manufacturer' => ['name'],
@@ -84,6 +85,24 @@ class AssetLink extends SnipeModel
     public function assets()
     {
         return $this->hasMany(\App\Models\AssetModel::class, 'related_model_id');
+    }
+
+
+    /**
+     * Establishes the asset_model_link -> model relationship
+     */
+    public function model()
+    {
+        return $this->belongsTo(\App\Models\AssetModel::class, 'model_id');
+    }
+
+
+    /**
+     * Establishes the asset_model_link -> model relationship
+     */
+    public function related_model()
+    {
+        return $this->belongsTo(\App\Models\AssetModel::class, 'related_model_id');
     }
 
     /**
@@ -176,5 +195,31 @@ class AssetLink extends SnipeModel
     public function scopeOrderFieldset($query, $order)
     {
         return $query->leftJoin('custom_fieldsets', 'models.fieldset_id', '=', 'custom_fieldsets.id')->orderBy('custom_fieldsets.name', $order);
+    }
+
+    /**
+     * Query builder scope to order on manufacturer
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query  Query builder instance
+     * @param  text                              $order       Order
+     *
+     * @return \Illuminate\Database\Query\Builder          Modified query builder
+     */
+    public function scopeOrderModel($query, $order)
+    {
+        return $query->leftJoin('models', 'model_links.model_id', '=', 'models.id')->orderBy('models.name', $order);
+    }
+
+
+    /**
+     * Checks if the model is deletable
+     *
+     * @author A. Gianotto <snipe@snipe.net>
+     * @since [v6.3.4]
+     * @return bool
+     */
+    public function isDeletable()
+    {
+        return true;
     }
 }
