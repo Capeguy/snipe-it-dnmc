@@ -109,6 +109,7 @@ RUN \
       && chmod +x /var/www/html/artisan \
       && echo "Finished setting up application in /var/www/html"
 
+
 ############## DEPENDENCIES via COMPOSER ###################
 
 #global install of composer

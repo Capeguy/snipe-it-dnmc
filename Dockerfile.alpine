@@ -30,6 +30,8 @@ RUN  apk add --no-cache \
         php81-redis \
         php81-pecl-memcached \
         php81-exif \
+        php81-pear \
+        php81-dev \
         curl \
         wget \
         vim \
@@ -66,6 +68,18 @@ RUN \
     && ln -fs "/var/lib/snipeit/keys/oauth-public.key" "/var/www/html/storage/oauth-public.key" \
     && chown -hR apache "/var/www/html/storage/" \
     && chown -R apache "/var/lib/snipeit"
+
+# Install xdebug
+RUN apk add --update build-base linux-headers
+RUN pecl install xdebug
+RUN echo "zend_extension=$(find /usr/lib/php81/modules/ -name xdebug.so)" >> /etc/php81/conf.d/xdebug.ini
+RUN echo "xdebug.mode=debug" >> /etc/php81/conf.d/xdebug.ini
+RUN echo "xdebug.start_with_request=yes" >> /etc/php81/conf.d/xdebug.ini
+RUN echo "xdebug.client_host=host.docker.internal" >> /etc/php81/conf.d/xdebug.ini
+RUN echo "xdebug.client_port=9919" >> /etc/php81/conf.d/xdebug.ini
+RUN echo "xdebug.discover_client_host=1" >> /etc/php81/conf.d/xdebug.ini
+
+
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
