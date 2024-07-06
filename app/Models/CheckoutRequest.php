@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class CheckoutRequest extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['user_id'];
+    protected $fillable = ['user_id', 'reason'];
     protected $table = 'checkout_requests';
 
     public function user()

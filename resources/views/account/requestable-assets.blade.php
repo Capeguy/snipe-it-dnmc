@@ -145,13 +145,13 @@
                                                 <td>{{$requestableModel->assets->where('requestable', '1')->count()}}</td>
 
                                                 <td>
-                                                    <form  action="{{ route('account/request-item', ['itemType' => 'asset_model', 'itemId' => $requestableModel->id])}}" method="POST" accept-charset="utf-8">
+                                                    <form id="request-asset-model-{{$requestableModel->id}}" action="{{ route('account/request-item', ['itemType' => 'asset_model', 'itemId' => $requestableModel->id])}}" method="POST" accept-charset="utf-8">
                                                         {{ csrf_field() }}
                                                     <input type="text" style="width: 70px; margin-right: 10px;" class="form-control pull-left" name="request-quantity" value="" placeholder="{{ trans('general.qty') }}">
                                                     @if ($requestableModel->isRequestedBy(Auth::user()))
                                                         {{ Form::submit(trans('button.cancel'), ['class' => 'btn btn-danger btn-sm'])}}
                                                     @else
-                                                        {{ Form::submit(trans('button.request'), ['class' => 'btn btn-primary btn-sm'])}}
+                                                        {{ Form::submit(trans('button.request'), ['class' => 'btn btn-primary btn-sm', 'data-toggle' => "modal", 'data-target' => "#requestAssetModelModal", 'onclick' => 'localStorage.setItem(\'requestedAsset\', ' . $requestableModel->id . '); return false;' ])}}
                                                     @endif
                                                     </form>
                                                 </td>
@@ -172,6 +172,70 @@
         @endif
     </div> <!-- .col-md-12> -->
 </div> <!-- .row -->
+
+<!-- Modal -->
+<div class="modal fade" id="requestAssetModal" tabindex="-1" role="dialog" aria-labelledby="requestAssetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestAssetModalLabel">Request Asset with Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    <div class="alert alert-danger" id="modal_error_msg" style="display:none">
+                        Please enter a valid Reason for Request.
+                    </div>
+                    <div class="dynamic-form-row" style="min-height: 100px;">
+                        <div class="col-md-4 col-xs-12"><label for="modal-name">Reason for Request</label></div>
+                        <div class="col-md-8 col-xs-12 required">
+                            <textarea class="col-md-6 form-control" id="request-asset-reason" name="reason" rows="4" cols="50"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary request-asset-submit">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="requestAssetModelModal" tabindex="-1" role="dialog" aria-labelledby="requestAssetModelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestAssetModalLabel">Request Asset Model with Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    <div class="alert alert-danger" id="modal_error_msg" style="display:none">
+                        Please enter a valid Reason for Request.
+                    </div>
+                    <div class="dynamic-form-row" style="min-height: 100px;">
+                        <div class="col-md-4 col-xs-12"><label for="modal-name">Reason for Request</label></div>
+                        <div class="col-md-8 col-xs-12 required">
+                            <textarea class="col-md-6 form-control" id="request-asset-model-reason" name="reason" rows="4" cols="50"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary request-asset-model-submit">Submit Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 
@@ -191,6 +255,45 @@
         currentUrl = $(this).attr('href');
         // $(this).attr('href', currentUrl + '?quantity=' + quantity);
         // alert($(this).attr('href'));
+    });
+
+    $(document).ready(function () {
+        $(".request-asset-submit").on('click', function(e) {
+           var reason = $("#request-asset-reason").val();
+           if (reason.length === 0) {
+               $("#modal_error_msg").show();
+               return false;
+           } else {
+               $("#modal_error_msg").hide();
+           }
+           var requestedAsset = localStorage.getItem('requestedAsset');
+           var form = $("#request-asset-" + requestedAsset);
+            $("<input>").attr({
+                name: "reason",
+                id: "reason",
+                type: "hidden",
+                value: reason
+            }).appendTo(form);
+            form.submit();
+        });
+        $(".request-asset-model-submit").on('click', function(e) {
+            var reason = $("#request-asset-model-reason").val();
+            if (reason.length === 0) {
+                $("#modal_error_msg").show();
+                return false;
+            } else {
+                $("#modal_error_msg").hide();
+            }
+            var requestedAsset = localStorage.getItem('requestedAsset');
+            var form = $("#request-asset-model-" + requestedAsset);
+            $("<input>").attr({
+                name: "reason",
+                id: "reason",
+                type: "hidden",
+                value: reason
+            }).appendTo(form);
+            form.submit();
+        });
     });
 </script>
 @stop

@@ -99,10 +99,6 @@
         });
     });
 
-
-
-
-
     function dateRowCheckStyle(value) {
         if ((value.days_to_next_audit) && (value.days_to_next_audit < {{ $snipeSettings->audit_warning_days ?: 0 }})) {
             return { classes : "danger" }
@@ -199,7 +195,7 @@
     });
 
 
-    
+
 
     // This only works for model index pages because it uses the row's model ID
     function genericRowLinkFormatter(destination) {
@@ -311,7 +307,7 @@
                 if (row.name=='') {
                     var name_for_box = row.asset_tag
                 }
-                
+
                 actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '" '
                     + ' class="actions btn btn-danger btn-sm delete-asset" data-tooltip="true"  '
                     + ' data-toggle="modal" '
@@ -476,7 +472,7 @@
         } else if (value.available_actions.cancel == true)  {
             return '<form action="{{ config('app.url') }}/account/request-asset/'+ value.id + '" method="POST">@csrf<button class="btn btn-danger btn-sm" data-tooltip="true" title="Cancel this item request">{{ trans('button.cancel') }}</button></form>';
         } else if (value.available_actions.request == true)  {
-            return '<form action="{{ config('app.url') }}/account/request-asset/'+ value.id + '" method="POST">@csrf<button class="btn btn-primary btn-sm" data-tooltip="true" title="Request this item">{{ trans('button.request') }}</button></form>';
+            return '<form id="request-asset-'+ value.id + '" action="{{ config('app.url') }}/account/request-asset/'+ value.id + '" method="POST">@csrf<button class="btn btn-primary btn-sm request-asset" onclick="localStorage.setItem(\'requestedAsset\', '+ value.id + '); return false;" data-tooltip="true" title="Request this item" data-toggle="modal" data-target="#requestAssetModal" data-asset-id="'+ value.id + '">{{ trans('button.request') }}</button></form>';
         }
 
     }
@@ -840,10 +836,10 @@
         if (Array.isArray(data)) {
             var field = this.field;
             var total_sum = data.reduce(function(sum, row) {
-                
+
                 return (sum) + (cleanFloat(row[field]) || 0);
             }, 0);
-            
+
             return numberWithCommas(total_sum.toFixed(2));
         }
         return 'not an array';
@@ -851,7 +847,7 @@
 
     function sumFormatterQuantity(data){
         if(Array.isArray(data)) {
-            
+
             // Prevents issues on page load where data is an empty array
             if(data[0] == undefined){
                 return 0.00
@@ -875,7 +871,7 @@
     }
 
     function numberWithCommas(value) {
-        
+
         if ((value) && ("{{$snipeSettings->digit_separator}}" == "1.234,56")){
             var parts = value.toString().split(".");
              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -928,11 +924,9 @@
             $('[data-tooltip="true"]').tooltip({
                 container: 'body'
             });
-
-
         });
     });
 
 </script>
-    
+
 @endpush

@@ -576,7 +576,8 @@ class BulkAssetsController extends Controller
 
             if (! $errors) {
                 // Redirect to the new asset page
-                return redirect()->to('hardware')->with('success', trans('admin/hardware/message.checkout.success'));
+                return redirect()->intended('account/view-assets#asset')->with('success', trans('admin/hardware/message.checkout.success'));
+//                return redirect()->to('hardware')->with('success', trans('admin/hardware/message.checkout.success'));
             }
             // Redirect to the asset management page with error
             return redirect()->route('hardware.bulkcheckout.show')->with('error', trans('admin/hardware/message.checkout.error'))->withErrors($errors);
