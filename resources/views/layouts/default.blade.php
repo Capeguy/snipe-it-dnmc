@@ -30,10 +30,10 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
         window.Laravel = {csrfToken: '{{ csrf_token() }}'};
     </script>
     </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    <link rel="stylesheet" href="{{ url(mix('css/dist/bootstrap-icon.css')) }}">
     @if (($snipeSettings) && ($snipeSettings->allow_user_skin==1) && Auth::check() && Auth::user()->present()->skin != '')
         <link rel="stylesheet" href="{{ url(mix('css/dist/skins/skin-'.Auth::user()->present()->skin.'.min.css')) }}">
     @else
@@ -1157,7 +1157,8 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                 })
                 .catch(err => {
                     // failure, handle it.
-                    console.log(`Error scanning file. Reason: ${err}`)
+                    console.log(`Error scanning file.`)
+                    alert(err);
                 });
                 });
 
