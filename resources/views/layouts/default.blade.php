@@ -29,6 +29,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
     <script nonce="{{ csrf_token() }}">
         window.Laravel = {csrfToken: '{{ csrf_token() }}'};
     </script>
+    </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 
     {{-- stylesheets --}}
@@ -39,6 +40,8 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
         <link rel="stylesheet"
               href="{{ url(mix('css/dist/skins/skin-'.($snipeSettings->skin!='' ? $snipeSettings->skin : 'blue').'.css')) }}">
     @endif
+
+    
     {{-- page level css --}}
     @stack('css')
 
@@ -90,7 +93,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <script src="{{ url(asset('js/html5shiv.js')) }}" nonce="{{ csrf_token() }}"></script>
     <script src="{{ url(asset('js/respond.js')) }}" nonce="{{ csrf_token() }}"></script>
-    <script src="{{ url(asset('js/qr-scanner.umd.min.js')) }}" nonce="{{ csrf_token() }}"></script>
+    <script src="{{ url(asset('js/html5-qrcode.min.js')) }}" nonce="{{ csrf_token() }}"></script>
 
     @livewireStyles
 
@@ -200,11 +203,15 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                                                        for="tagSearch">{{ trans('general.lookup_by_tag') }}</label>
                                                 <div class="input-group">   
                                                 <input type="text" class="form-control" id="tagSearch" name="assetTag" placeholder="{{ trans('general.lookup_by_tag') }}">
+                                                <input type="file" id="qr-input-file" accept="image/*" style="display:none;">
+
                                                 <span class="input-group-btn">
-                                                    <button type="button" class="btn btn-default scannable" data-id="tagSearch" style="padding: auto !important;" aria-label="">
-                                                    <span class="glyphicon" aria-hidden="true"></span>
+                                                    <button type="button" class="btn btn-default scannable" data-id="tagSearch" onclick='$("#qr-input-file").click()' style="padding: auto !important;" aria-label="">
+                                                    <span class="glyphicon scan-icon" aria-hidden="true"></span>
                                                     </button>
+                                                    </span>
                                                 </div>
+                                                
                                                 <input type="hidden" name="topsearch" value="true" id="search">
                                             </div>
                                             <div class="col-xs-1">
@@ -1126,30 +1133,34 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
 
                 // Start of customization for QR Scanning
                 
-                // To enforce the use of the new api with detailed scan results, call the constructor with an options object, see below.
-                
-                function handleQRCode(result, element) {
-                    alert('Decoded QR code: ' + result);
-                    let id = $(element).data('id');
-                    alert('ID of Element to populate: ' + id);
-                    $("#" + id).val(result);
-                    // Submit form
-                    $(element).closest('form').submit();
+                const html5QrCode = new Html5Qrcode(/* element id */ "reader",
+                    { fps: 10, qrbox: 250 }
+                );
+
+                // File based scanning
+                const fileinput = document.getElementById('qr-input-file');
+                fileinput.addEventListener('change', e => {
+                if (e.target.files.length == 0) {
+                    // No file selected, ignore 
+                    return;
                 }
 
-                $(".scannable").each(function() {
-                    $(this).append('<i class="bi bi-qr-code"></i>');
-                    $(this).on('click', function() {
-                        const qrScanner = new QrScanner(
-                            document.getElementById("vid"),
-                            function(result) {
-                                handleQRCode(result, this);
-                            },
-                            { returnDetailedScanResult: true, alsoTryWithoutScanRegion: true /* your options or returnDetailedScanResult: true if you're not specifying any other options */ },
-                        );
-                        qrScanner.start();
-                    });
+                // Use the first item in the list
+                const imageFile = e.target.files[0];
+                html5QrCode.scanFile(imageFile, /* showImage= */true)
+                .then(qrCodeMessage => {
+                    // success, use qrCodeMessage
+                    alert(qrCodeMessage);
+                    $("#tagSearch").val(qrCodeMessage);
+                    $("#tagSearch").focus();
+                    $("#tagSearch").submit();
+                })
+                .catch(err => {
+                    // failure, handle it.
+                    console.log(`Error scanning file. Reason: ${err}`)
                 });
+                });
+
                 // qrScanner.start();
 
                 // End of customization for QR Scanning
@@ -1167,8 +1178,9 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
         @include('partials.bpay')
 
         @livewireScripts
-        <video id="vid"></video>
-        <i class="bi bi-qr-code"></i>
+
+        <div id="reader"></div>
+
 
         </body>
 </html>
