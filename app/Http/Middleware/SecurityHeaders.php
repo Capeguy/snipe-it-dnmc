@@ -93,7 +93,7 @@ class SecurityHeaders
             if (config('filesystems.disks.public.driver') == 's3') {
                $csp_policy[] = "img-src 'self' data:  ".config('filesystems.disks.public.url');
             }
-            $csp_policy[] = "img-src * 'self' data: https:";
+            $csp_policy[] = "img-src * 'self' data: https: blob:";
             
             $csp_policy = join(';', $csp_policy);
            
