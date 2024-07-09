@@ -422,6 +422,7 @@ class AssetsController extends Controller
     public function showByTag(Request $request, $tag)
     {
         $this->authorize('index', Asset::class);
+        
         $assets = Asset::where('asset_tag', $tag)->with('assetstatus')->with('assignedTo');
 
         // Check if they've passed ?deleted=true
@@ -444,8 +445,11 @@ class AssetsController extends Controller
 
         }
 
+        // If there are 0 results, try showBySerial instead
+        return $this->showBySerial($request, $tag);
+
         // If there are 0 results, return the "no such asset" response
-        return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.does_not_exist')), 200);
+        // return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.does_not_exist')), 200);
 
     }
 

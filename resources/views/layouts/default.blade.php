@@ -1150,10 +1150,10 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                 html5QrCode.scanFile(imageFile, /* showImage= */true)
                 .then(qrCodeMessage => {
                     // success, use qrCodeMessage
-                    alert(qrCodeMessage);
                     $("#tagSearch").val(qrCodeMessage);
                     $("#tagSearch").focus();
-                    $("#tagSearch").submit();
+                    // Submit the nearest form
+                    $(e.target).closest('form').submit();
                 })
                 .catch(err => {
                     // failure, handle it.
