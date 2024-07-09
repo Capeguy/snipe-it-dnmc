@@ -216,7 +216,8 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
 
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-default scannable" data-id="tagSearch" onclick='$("#qr-input-file").click()' style="padding: auto !important;" aria-label="">
-                                                    <span class="glyphicon scan-icon" aria-hidden="true"></span>
+                                                    
+                                                    <i class="fas fa-qrcode" aria-hidden="true"></i>
                                                     </button>
                                                     </span>
                                                 </div>
