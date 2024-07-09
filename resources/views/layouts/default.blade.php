@@ -79,6 +79,15 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
             font-family:'Bootstrap-icons';
             content:'\F6AE';
         }
+        ul.nav.navbar-nav > ul {
+            display: inline;
+        }
+        @media (max-width: 767px) {
+            button.pull-right {
+                float: none !important;
+            
+            }
+        }
     </style>
 
 
@@ -121,7 +130,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                        role="button">
                         <span class="sr-only">{{ trans('general.toggle_navigation') }}</span>
                     </a>
-                    <div class="nav navbar-nav navbar-left">
+                    <div class="nav navbar-nav navbar-left hidden-xs">
                         <div class="left-navblock">
                             @if ($snipeSettings->brand == '3')
                                 <a class="logo navbar-brand no-hover" href="{{ config('app.url') }}">
@@ -198,7 +207,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                                     <form class="navbar-form navbar-left form-horizontal" role="search"
                                           action="{{ route('findbytag/hardware') }}" method="get">
                                         <div class="col-xs-12 col-md-12">
-                                            <div class="col-xs-12 form-group">
+                                            <div class="col-xs-11 form-group">
                                                 <label class="sr-only"
                                                        for="tagSearch">{{ trans('general.lookup_by_tag') }}</label>
                                                 <div class="input-group">   
@@ -215,7 +224,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                                                 <input type="hidden" name="topsearch" value="true" id="search">
                                             </div>
                                             <div class="col-xs-1">
-                                                <button type="submit" class="btn btn-primary pull-right">
+                                                <button type="submit" class="btn btn-primary pull-right" style="margin-left:15px">
                                                     <i class="fas fa-search" aria-hidden="true"></i>
                                                     <span class="sr-only">{{ trans('general.search') }}</span>
                                                 </button>
