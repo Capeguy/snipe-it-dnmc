@@ -29,15 +29,19 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
     <script nonce="{{ csrf_token() }}">
         window.Laravel = {csrfToken: '{{ csrf_token() }}'};
     </script>
+    </script>
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    <link rel="stylesheet" href="{{ url(mix('css/dist/bootstrap-icons.css')) }}">
     @if (($snipeSettings) && ($snipeSettings->allow_user_skin==1) && Auth::check() && Auth::user()->present()->skin != '')
         <link rel="stylesheet" href="{{ url(mix('css/dist/skins/skin-'.Auth::user()->present()->skin.'.min.css')) }}">
     @else
         <link rel="stylesheet"
               href="{{ url(mix('css/dist/skins/skin-'.($snipeSettings->skin!='' ? $snipeSettings->skin : 'blue').'.css')) }}">
     @endif
+
+    
     {{-- page level css --}}
     @stack('css')
 
@@ -70,6 +74,22 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
         </style>
     @endif
 
+    <style>
+        .scan-icon::before {
+            font-family:'Bootstrap-icons';
+            content:'\F6AE';
+        }
+        ul.nav.navbar-nav > ul {
+            display: inline;
+        }
+        @media (max-width: 767px) {
+            button.pull-right {
+                float: none !important;
+            
+            }
+        }
+    </style>
+
 
     <script nonce="{{ csrf_token() }}">
         window.snipeit = {
@@ -82,6 +102,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <script src="{{ url(asset('js/html5shiv.js')) }}" nonce="{{ csrf_token() }}"></script>
     <script src="{{ url(asset('js/respond.js')) }}" nonce="{{ csrf_token() }}"></script>
+    <script src="{{ url(asset('js/html5-qrcode.min.js')) }}" nonce="{{ csrf_token() }}"></script>
 
     @livewireStyles
 
@@ -109,7 +130,7 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                        role="button">
                         <span class="sr-only">{{ trans('general.toggle_navigation') }}</span>
                     </a>
-                    <div class="nav navbar-nav navbar-left">
+                    <div class="nav navbar-nav navbar-left hidden-xs">
                         <div class="left-navblock">
                             @if ($snipeSettings->brand == '3')
                                 <a class="logo navbar-brand no-hover" href="{{ config('app.url') }}">
@@ -186,15 +207,25 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                                     <form class="navbar-form navbar-left form-horizontal" role="search"
                                           action="{{ route('findbytag/hardware') }}" method="get">
                                         <div class="col-xs-12 col-md-12">
-                                            <div class="col-xs-12 form-group">
+                                            <div class="col-xs-11 form-group">
                                                 <label class="sr-only"
                                                        for="tagSearch">{{ trans('general.lookup_by_tag') }}</label>
-                                                <input type="text" class="form-control" id="tagSearch" name="assetTag"
-                                                       placeholder="{{ trans('general.lookup_by_tag') }}">
+                                                <div class="input-group">   
+                                                <input type="text" class="form-control" id="tagSearch" name="assetTag" placeholder="{{ trans('general.lookup_by_tag') }}">
+                                                <input type="file" id="qr-input-file" accept="image/*" style="display:none;">
+
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default scannable" data-id="tagSearch" onclick='$("#qr-input-file").click()' style="padding: auto !important;" aria-label="">
+                                                    
+                                                    <i class="fas fa-qrcode" aria-hidden="true"></i>
+                                                    </button>
+                                                    </span>
+                                                </div>
+                                                
                                                 <input type="hidden" name="topsearch" value="true" id="search">
                                             </div>
                                             <div class="col-xs-1">
-                                                <button type="submit" class="btn btn-primary pull-right">
+                                                <button type="submit" class="btn btn-primary pull-right" style="margin-left:15px">
                                                     <i class="fas fa-search" aria-hidden="true"></i>
                                                     <span class="sr-only">{{ trans('general.search') }}</span>
                                                 </button>
@@ -1109,11 +1140,47 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
                 // Configure the observer to observe changes in the DOM
                 var config = { childList: true, subtree: true };
                 observer.observe(document.body, config);
+
+                // Start of customization for QR Scanning
+                
+                const html5QrCode = new Html5Qrcode(/* element id */ "reader",
+                    { fps: 10, qrbox: 250 }
+                );
+
+                // File based scanning
+                const fileinput = document.getElementById('qr-input-file');
+                fileinput.addEventListener('change', e => {
+                if (e.target.files.length == 0) {
+                    // No file selected, ignore 
+                    return;
+                }
+
+                // Use the first item in the list
+                const imageFile = e.target.files[0];
+                html5QrCode.scanFile(imageFile, /* showImage= */true)
+                .then(qrCodeMessage => {
+                    // success, use qrCodeMessage
+                    $("#tagSearch").val(qrCodeMessage);
+                    $("#tagSearch").focus();
+                    // Submit the nearest form
+                    $(e.target).closest('form').submit();
+                })
+                .catch(err => {
+                    // failure, handle it.
+                    console.log(`Error scanning file.`)
+                    console.log(err);
+                    alert(err);
+                });
+                });
+
+                // qrScanner.start();
+
+                // End of customization for QR Scanning
             });
 
 
         </script>
-
+        
         @if ((Session::get('topsearch')=='true') || (Request::is('/')))
             <script nonce="{{ csrf_token() }}">
                 $("#tagSearch").focus();
@@ -1123,6 +1190,9 @@ dir="{{ in_array(app()->getLocale(),['ar-SA','fa-IR', 'he-IL']) ? 'rtl' : 'ltr' 
         @include('partials.bpay')
 
         @livewireScripts
+
+        <div id="reader"></div>
+
 
         </body>
 </html>

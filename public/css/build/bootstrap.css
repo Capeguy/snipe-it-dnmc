@@ -256,8 +256,8 @@ th {
 }
 @font-face {
   font-family: 'Glyphicons Halflings';
-  src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('/js/bootstrap/fonts/glyphicons-halflings-regular.eot');
+  src: url('/js/bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/js/bootstrap/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/js/bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/js/bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/js/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
   position: relative;
@@ -4233,7 +4233,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-form {
   margin-left: -15px;
   margin-right: -15px;
-  padding: 10px 15px;
+  padding: 0px 15px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
