@@ -469,9 +469,15 @@ class AssetsController extends Controller
         $tag = $tag ? $tag : $request->get('assetTag');
         $topsearch = ($request->get('topsearch') == 'true');
 
-        if (! $asset = Asset::where('asset_tag', '=', $tag)->first()) {
+        // If $tag is a URL, extract the last part of the URL delimited by slashes as $serial
+        if (filter_var($tag, FILTER_VALIDATE_URL)) {
+            return redirect($tag);
+        }
+
+        if (! $asset = Asset::where('asset_tag', '=', $tag)->orWhere('serial', '=', $tag)->first()) {
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
         }
+        
         $this->authorize('view', $asset);
 
         return redirect()->route('hardware.show', $asset->id)->with('topsearch', $topsearch);
