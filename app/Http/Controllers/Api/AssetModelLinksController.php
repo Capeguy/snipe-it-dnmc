@@ -39,6 +39,8 @@ class AssetModelLinksController extends Controller
                 'id',
                 'model_id',
                 'related_model_id',
+                'model_name',
+                'related_model_name',
                 // 'image',
                 // 'name',
                 // 'model_number',

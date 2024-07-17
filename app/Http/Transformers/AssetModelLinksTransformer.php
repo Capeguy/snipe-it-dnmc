@@ -41,8 +41,10 @@ class AssetModelLinksTransformer
 
         $array = [
             'id' => (int) $assetmodellink->id,
-            'model_id' => $assetmodellink->model->name,
-            'related_model_id' => $assetmodellink->related_model->name,
+            'model_id' => $assetmodellink->model->id,
+            'related_model_id' => $assetmodellink->related_model->id,
+            'model_name' => $assetmodellink->model->name,
+            'related_model_name' => $assetmodellink->related_model->name,
             // 'created_at' => Helper::getFormattedDateObject($assetmodellink->created_at, 'datetime'),
             // 'updated_at' => Helper::getFormattedDateObject($assetmodellink->updated_at, 'datetime'),
             // 'deleted_at' => Helper::getFormattedDateObject($assetmodellink->deleted_at, 'datetime'),

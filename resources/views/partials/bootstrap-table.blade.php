@@ -501,7 +501,6 @@
         'groups',
         'kits'
     ];
-
     for (var i in formatters) {
         window[formatters[i] + 'LinkFormatter'] = genericRowLinkFormatter(formatters[i]);
         window[formatters[i] + 'LinkObjFormatter'] = genericColumnObjLinkFormatter(formatters[i]);
@@ -522,6 +521,17 @@
         window[owner_name + '_' + child_name + 'ActionsFormatter'] = genericActionsFormatter(owner_name, child_name);
     }
 
+    window['model_linksLinkFormatter'] = modelLinkRowLinkFormatter('models', 'model_id');
+    window['related_model_linksLinkFormatter'] = modelLinkRowLinkFormatter('models', 'related_model_id')
+
+    function modelLinkRowLinkFormatter(destination, field) {
+        return function (value,row) {
+            if (value) {
+                console.log(row);
+                return '<a href="{{ config('app.url') }}/' + destination + '/' + row[field] + '">' + value + '</a>';
+            }
+        };
+    }
 
 
     // This is  gross, but necessary so that we can package the API response
